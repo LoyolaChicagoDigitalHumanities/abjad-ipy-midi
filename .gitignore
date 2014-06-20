@@ -1,0 +1,5 @@
+build/
+abjad_ipython_midi.egg-info/
+temp/
+*.sf2
+*.swp
