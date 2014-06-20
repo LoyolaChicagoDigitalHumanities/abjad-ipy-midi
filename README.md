@@ -16,7 +16,7 @@ The module can be loaded into your own notebooks using the example code below:
 
 ```python
 from abjad import *
-%load_ext abjad_midi.ext.fluid
+%load_ext abjad_midi.ext.ipython
 loadSoundFont('path/to/soundfont.sf2', 'gm')
 
 pitch_numbers = 4 * [0, 2, 4, 9, 7]
