@@ -4,7 +4,7 @@ Abjad-MIDI IPython Extension
 [1]: http://ipython.org/notebook.html
 [2]: http://www.projectabjad.org/
 [3]: http://sourceforge.net/apps/trac/fluidsynth/
-[4]: http://sourceforge.net/apps/trac/fluidsynth/wiki/SoundFont
+[4]: https://packages.debian.org/source/squeeze/fluid-soundfont 
 [5]: https://github.com/tiagoantao/abjad-ipython
 
 This is an [IPython][1] module that renders [Abjad][2] expressions as
@@ -41,6 +41,14 @@ repository for a proper install of Abjad in a virtual environment. Fluidsynth is
 easily available in most packages managers, or directly from their
 [Sourceforge][fs] project page, just make sure that the binary is within your
 `PATH`.
+
+You will also need to find a SoundFont file, which is a collection of samples
+that Fluidsynth uses to render MIDI data as audio. There are many free and
+commercial ones available, or you can even make your own. One of the best open
+source SoundFonts available is the [FluidR3 project][4]; the General MIDI (GM)
+font contains many instruments including pianos, guitars, and drums. SoundFonts
+do not require installation, so you can keep your SoundFonts in the same folder
+as your IPython notebooks or collect them in your Python virtual environment.
 
 ## Installation
 
