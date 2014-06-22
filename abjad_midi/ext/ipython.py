@@ -16,22 +16,24 @@ import os
 import tempfile
 from IPython.core.display import display_html
 
-font=''
+font=None
 bank='gs'
 
 def loadSoundFont(soundfont, midibank):
     '''Saves location of argument SoundFont and its type. Type can be
     either 'gs', 'gm', 'xg', or 'mma'.
     '''
-    if(os.path.isfile(soundfont)): 
+    global font
+
+    if os.path.isfile(soundfont):
         font = soundfont
     else: 
-        print 'The specified SoundFont is either inaccessible or does not exist.' 
+        print('The specified SoundFont %s (relative to %s) is either inaccessible or does not exist.' % (soundfont, os.getcwd()))
     
     if(midibank == 'gs' or midibank == 'gm' or midibank == 'xg' or midibank == 'mma'): 
         bank = midibank
     else:
-        print "The MIDI Bank must be either be 'gm', 'gs', 'xg', or 'mma'."
+        print("The MIDI Bank must be either be 'gm', 'gs', 'xg', or 'mma'.")
 
 def play(expr):
     '''Renders Abjad expression as Vorbis audio, then displays it in the notebook
@@ -42,6 +44,7 @@ def play(expr):
       expr -- Abjad expression to be rendered
     '''
 
+    global font
     from base64 import b64encode
     from abjad.tools import systemtools, topleveltools
     assert '__illustrate__' in dir(expr)
@@ -62,9 +65,9 @@ def play(expr):
             audio_tag = '<audio controls type="audio/ogg" src="data:audio/ogg;base64,{0}">'.format(audio_encoded)
             display_html(audio_tag, raw=True)
         else:
-            print 'Fluidsynth failed to render MIDI, result: %i' % (result)
+            print('Fluidsynth failed to render MIDI, result: %i' % (result))
     else:
-        print 'Soundfont is not specified, please call \'loadSoundFount(soundfont, midibank)\''
+        print('Soundfont is not specified, please call \'loadSoundFount(soundfont, midibank)\'')
 
 def load_ipython_extension(ipython):
     import abjad

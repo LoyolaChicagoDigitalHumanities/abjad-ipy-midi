@@ -6,11 +6,13 @@ Abjad-MIDI IPython Extension
 [3]: http://sourceforge.net/apps/trac/fluidsynth/
 [4]: https://packages.debian.org/source/squeeze/fluid-soundfont 
 [5]: https://github.com/tiagoantao/abjad-ipython
+[6]: http://musescore.org/en/handbook/soundfont
 
 This is an [IPython][1] module that renders [Abjad][2] expressions as
 HTML5 `<audio>` tags inside Notebooks. Rendering relies on [Fluidsynth][3]
-and a SoundFont, which you can find [here][4] or you can source your own. It
-works by replacing the top-level `play()` method in Abjad.
+and a SoundFont, which you can find [here][4] or you can source your own. A
+particularly good list of soundfonts is provided on the [MuseScore][6] pages.
+It works by replacing the top-level `play()` method in Abjad. 
 
 The module can be loaded into your own notebooks using the example code below:
 
@@ -49,6 +51,14 @@ source SoundFonts available is the [FluidR3 project][4]; the General MIDI (GM)
 font contains many instruments including pianos, guitars, and drums. SoundFonts
 do not require installation, so you can keep your SoundFonts in the same folder
 as your IPython notebooks or collect them in your Python virtual environment.
+
+A brief note about Fluidsynth. On OS X, especially if using HomeBrew, you need to
+ensure `libsndfile` support is compiled in. Otherwise, no output formats are supported
+(except raw). 
+
+```
+brew install --with-libsndfile fluidsynth
+```
 
 ## Installation
 
