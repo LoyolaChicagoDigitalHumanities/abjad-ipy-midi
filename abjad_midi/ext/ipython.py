@@ -24,6 +24,7 @@ def loadSoundFont(soundfont, midibank):
     either 'gs', 'gm', 'xg', or 'mma'.
     '''
     global font
+    global bank
 
     if os.path.isfile(soundfont):
         font = soundfont
@@ -45,6 +46,8 @@ def play(expr):
     '''
 
     global font
+    global bank
+
     from base64 import b64encode
     from abjad.tools import systemtools, topleveltools
     assert '__illustrate__' in dir(expr)
@@ -56,14 +59,17 @@ def play(expr):
         midi_file_path, format_time, render_time = result 
 
         tmpaudio = tmpdir + os.sep + 'out.ogg'
-        cmd = 'fluidsynth -nli -r 48000 -o synth.cpu-cores=2 synth.midi-bank-select=%s -T oga -F %s %s %s' % (bank, tmpaudio, font, midi_file_path)
+        cmd = 'fluidsynth -T oga -nli -r 48000 -o synth.midi-bank-select=%s -F %s %s %s' % (bank, tmpaudio, font, midi_file_path)
+        print(cmd)
         result = systemtools.IOManager.spawn_subprocess(cmd)
 
         if result == 0:
-            audio_file = open(tmpaudio, "rb").read()
-            audio_encoded = b64encode(audio_file)
-            audio_tag = '<audio controls type="audio/ogg" src="data:audio/ogg;base64,{0}">'.format(audio_encoded)
-            display_html(audio_tag, raw=True)
+            with open(tmpaudio, "rb") as audiofile:
+               audio_data = audiofile.read()
+               audio_encoded = b64encode(audio_data)
+               audio_tag = '<audio controls type="audio/ogg" src="data:audio/ogg;base64,{0}">'.format(audio_encoded)
+               display_html(audio_tag, raw=True)
+
         else:
             print('Fluidsynth failed to render MIDI, result: %i' % (result))
     else:
