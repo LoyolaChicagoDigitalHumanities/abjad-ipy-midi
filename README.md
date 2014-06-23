@@ -36,9 +36,10 @@ was recently integrated into the Abjad project.
 [ipy]: http://ipython.org/install.html
 [jp]: https://github.com/ctsdh-luc-edu/jpatterns
 [fs]: http://sourceforge.net/projects/fluidsynth/files/
+[ff]: https://www.ffmpeg.org
 
-This project requires installations of [IPython][ipy], [Abjad][2] and
-[Fluidsynth][3]. You can follow the instructions on [Jazz Patterns][jp]
+This project requires installations of [IPython][ipy], [Abjad][2],
+[Fluidsynth][3] and [FFmpeg][ff]. You can follow the instructions on [Jazz Patterns][jp]
 repository for a proper install of Abjad in a virtual environment. Fluidsynth is
 easily available in most packages managers, or directly from their
 [Sourceforge][fs] project page, just make sure that the binary is within your
@@ -58,6 +59,13 @@ ensure `libsndfile` support is compiled in. Otherwise, no output formats are sup
 
 ```
 brew install --with-libsndfile fluidsynth
+brew insatll ffmpeg
+```
+
+MacPorts
+```
+port install fluidsynth
+port install ffmpeg
 ```
 
 ## Installation
@@ -69,3 +77,9 @@ git clone https://github.com/ctsdh-luc-edu/abjad-ipy-midi
 cd abjad-ipy-midi
 python setup.py install
 ```
+
+We're at an early stage in our overall project, so we don't provide a standard Python package
+for direct installation via pip. For the most part, our effort is following some moving targets (including Abjad), which we build from repository instead of using pip. 
+
+We strongly encourage working in a Python virtualenv, which is greatly helpful for setting
+up experimental software without cluttering your global site packages (site-packages) folder.

@@ -9,7 +9,13 @@
   have fluidsynth installed, it is likely available in your platform's
   package manager:
 
-    $ brew install fluidsynth
+  OS X
+    $ brew install fluidsynth --with-libsndfile
+    $ port install fluidsynth
+
+  Linux
+    $ apt-get install fluidsynth
+
 '''
 
 import os
