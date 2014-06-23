@@ -13,8 +13,13 @@
 '''
 
 import os
+import os.path
 import tempfile
 from IPython.core.display import display_html
+
+# 
+# Global (module) variables set by loadSoundFont() only
+#
 
 font=None
 bank='gs'
@@ -30,11 +35,11 @@ def loadSoundFont(soundfont, midibank):
         font = soundfont
     else: 
         print('The specified SoundFont %s (relative to %s) is either inaccessible or does not exist.' % (soundfont, os.getcwd()))
-    
-    if(midibank == 'gs' or midibank == 'gm' or midibank == 'xg' or midibank == 'mma'): 
+    allowed_banks = ['gs', 'gm', 'xg', 'mma']
+    if midibank in allowed_banks: 
         bank = midibank
     else:
-        print("The MIDI Bank must be either be 'gm', 'gs', 'xg', or 'mma'.")
+        print("The MIDI Bank must be either be one of %s" % (str(allowed_banks)))
 
 def play(expr):
     '''Renders Abjad expression as Vorbis audio, then displays it in the notebook
@@ -52,28 +57,34 @@ def play(expr):
     from abjad.tools import systemtools, topleveltools
     assert '__illustrate__' in dir(expr)
 
-    if font:
-        tmpdir = tempfile.mkdtemp()
-        agent = topleveltools.persist(expr)
-        result = agent.as_midi(tmpdir + os.sep + 'out.mid')
-        midi_file_path, format_time, render_time = result 
-
-        tmpaudio = tmpdir + os.sep + 'out.ogg'
-        cmd = 'fluidsynth -T oga -nli -r 48000 -o synth.midi-bank-select=%s -F %s %s %s' % (bank, tmpaudio, font, midi_file_path)
-        print(cmd)
-        result = systemtools.IOManager.spawn_subprocess(cmd)
-
-        if result == 0:
-            with open(tmpaudio, "rb") as audiofile:
-               audio_data = audiofile.read()
-               audio_encoded = b64encode(audio_data)
-               audio_tag = '<audio controls type="audio/ogg" src="data:audio/ogg;base64,{0}">'.format(audio_encoded)
-               display_html(audio_tag, raw=True)
-
-        else:
-            print('Fluidsynth failed to render MIDI, result: %i' % (result))
-    else:
+    if not font:
         print('Soundfont is not specified, please call \'loadSoundFount(soundfont, midibank)\'')
+        return
+
+    tmpdir = tempfile.mkdtemp()
+    agent = topleveltools.persist(expr)
+    result = agent.as_midi( os.path.join(tmpdir, 'out.mid'))
+    midi_file_path, format_time, render_time = result 
+
+    ogg_tmpfile = os.path.join(tmpdir, 'out.ogg')
+    mp3_tmpfile = os.path.join(tmpdir, 'out.mp3')
+
+    fluid_cmd = 'fluidsynth -T oga -nli -r 44200 -o synth.midi-bank-select=%s -F %s %s %s' % (bank, ogg_tmpfile, font, midi_file_path)
+    result = systemtools.IOManager.spawn_subprocess(fluid_cmd)
+    if result != 0:
+        print('Fluidsynth failed to render MIDI as OGG, result: %i' % (result))
+        return
+
+    ffmpeg_cmd = 'ffmpeg -i %s %s' % (ogg_tmpfile, mp3_tmpfile)
+    result = systemtools.IOManager.spawn_subprocess(ffmpeg_cmd)
+    if result == 0:
+        with open(mp3_tmpfile, "rb") as audiofile:
+           audio_data = audiofile.read()
+           audio_encoded = b64encode(audio_data)
+           audio_tag = '<audio controls type="audio/mpeg" src="data:audio/mpeg;base64,{0}">'.format(audio_encoded)
+           display_html(audio_tag, raw=True)
+    else:
+        print('ffmpeg failed to render mp3, result: %i' % (result))
 
 def load_ipython_extension(ipython):
     import abjad
