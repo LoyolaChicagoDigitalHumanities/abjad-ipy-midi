@@ -25,14 +25,14 @@ from IPython.core.display import display_html
 
 
 # 
-# Global (module) variables set by loadSoundFont() only
+# Global (module) variables set by load_sound_font() only
 #
 
 font=None
 bank='gs'
 
 
-def loadSoundFont(soundfont, midibank):
+def load_sound_font(soundfont, midibank):
     '''Saves location of argument SoundFont and its type. Type can be
     either 'gs', 'gm', 'xg', or 'mma'.
     '''
@@ -121,4 +121,4 @@ def load_ipython_extension(ipython):
     abjad.play = play
     topleveltools.play = play
     ipython.push({'play': play})
-    ipython.push({'loadSoundFont': loadSoundFont})
+    ipython.push({'load_sound_font': load_sound_font})
