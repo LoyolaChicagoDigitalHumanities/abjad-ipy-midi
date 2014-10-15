@@ -23,12 +23,14 @@ import os.path
 import tempfile
 from IPython.core.display import display_html
 
+
 # 
 # Global (module) variables set by loadSoundFont() only
 #
 
 font=None
 bank='gs'
+
 
 def loadSoundFont(soundfont, midibank):
     '''Saves location of argument SoundFont and its type. Type can be
@@ -59,6 +61,7 @@ def get_b64_from_file(filename):
             return base64.b64encode(data).decode('utf-8')
         else:
             return base64.b64encode(data)
+
 
 def play(expr):
     '''Renders Abjad expression as Vorbis audio, then displays it in the notebook
@@ -111,6 +114,7 @@ def play(expr):
     else:
         print('ffmpeg failed to render OGG as MP3, result: %i' % (result))
 
+
 def load_ipython_extension(ipython):
     import abjad
     from abjad.tools import topleveltools
@@ -118,4 +122,3 @@ def load_ipython_extension(ipython):
     topleveltools.play = play
     ipython.push({'play': play})
     ipython.push({'loadSoundFont': loadSoundFont})
-
