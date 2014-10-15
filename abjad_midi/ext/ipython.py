@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-'''Abjad-IPython: MIDI Playback
-  ----------------------------
+'''
+Abjad-IPython: MIDI Playback
+----------------------------
 
-  Integrates audio renderings of Abjad MIDI files into IPython
-  notebooks using fluidsynth.
+Integrates audio renderings of Abjad MIDI files into IPython
+notebooks using fluidsynth.
 
-  This patch requires fluidsynth to be in your $PATH. If you do not
-  have fluidsynth installed, it is likely available in your platform's
-  package manager:
+This patch requires fluidsynth to be in your $PATH. If you do not
+have fluidsynth installed, it is likely available in your platform's
+package manager:
 
-  OS X
+OS X
     $ brew install fluidsynth --with-libsndfile
     $ port install fluidsynth
 
-  Linux
+Linux
     $ apt-get install fluidsynth
 
 '''
@@ -24,35 +25,35 @@ import tempfile
 from IPython.core.display import display_html
 
 
-# 
+#
 # Global (module) variables set by load_sound_font() only
 #
 
-font=None
-bank='gs'
+font = None
+bank = 'gs'
 
 
 def load_sound_font(soundfont, midibank):
-    '''Saves location of argument SoundFont and its type. Type can be
-    either 'gs', 'gm', 'xg', or 'mma'.
+    '''Save location of argument SoundFont and its type.
+
+    Type can be either 'gs', 'gm', 'xg', or 'mma'.
     '''
     global font
     global bank
 
     if os.path.isfile(soundfont):
         font = soundfont
-    else: 
+    else:
         print('The specified SoundFont %s (relative to %s) is either inaccessible or does not exist.' % (soundfont, os.getcwd()))
     allowed_banks = ['gs', 'gm', 'xg', 'mma']
-    if midibank in allowed_banks: 
+    if midibank in allowed_banks:
         bank = midibank
     else:
         print("The MIDI Bank must be either be one of %s" % (str(allowed_banks)))
 
 
 def get_b64_from_file(filename):
-    '''This allows us to reliably read (and encode for HTML) the base64 representation of a file in Python 2 or 3.
-    Python 2 uses 'str' when reading a binary file entirely. Python 3 uses 'bytes'.
+    '''Read the base64 representation of a file and encode for HTML.
     '''
     import base64
     with open(filename, "rb") as infile:
@@ -64,12 +65,11 @@ def get_b64_from_file(filename):
 
 
 def play(expr):
-    '''Renders Abjad expression as Vorbis audio, then displays it in the notebook
-    as an <audio> tag. This method uses fluidsynth to convert MIDI into an audio
-    recording.
+    '''Render `expr` as Vorbis audio and display it in the IPythpn notebook
+    as an <audio> tag.
 
-    Keyword arguments:
-      expr -- Abjad expression to be rendered
+    This function requires `fluidsynth` and `ffmpeg` to convert MIDI into an
+    audio recording.
     '''
 
     global font
@@ -85,7 +85,7 @@ def play(expr):
     tmpdir = tempfile.mkdtemp()
     agent = topleveltools.persist(expr)
     result = agent.as_midi( os.path.join(tmpdir, 'out.mid'))
-    midi_file_path, format_time, render_time = result 
+    midi_file_path, format_time, render_time = result
 
     ogg_tmpfile = os.path.join(tmpdir, 'out.ogg')
     mp3_tmpfile = os.path.join(tmpdir, 'out.mp3')
