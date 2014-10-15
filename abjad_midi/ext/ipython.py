@@ -18,7 +18,6 @@ Linux
     $ apt-get install fluidsynth
 
 '''
-
 import os
 import os.path
 import shutil
@@ -26,12 +25,8 @@ import tempfile
 from IPython.core.display import display_html
 
 
-#
-# Global (module) variables set by load_sound_font() only
-#
-
-sound_font = None
 midi_bank = 'gs'
+sound_font = None
 
 
 def display_mp3(mp3_file_path, ogg_file_path):
