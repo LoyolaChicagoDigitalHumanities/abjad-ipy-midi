@@ -91,15 +91,26 @@ def play(expr):
 
     tmpdir = tempfile.mkdtemp()
     agent = topleveltools.persist(expr)
-    result = agent.as_midi( os.path.join(tmpdir, 'out.mid'))
+    result = agent.as_midi(os.path.join(tmpdir, 'out.mid'))
     midi_file_path, format_time, render_time = result
 
     ogg_tmpfile = os.path.join(tmpdir, 'out.ogg')
     mp3_tmpfile = os.path.join(tmpdir, 'out.mp3')
 
-    # TODO: Could make this user selectable.
     # OGG rendering
-    fluid_cmd = 'fluidsynth -T oga -nli -r 44200 -o synth.midi-bank-select=%s -F %s %s %s' % (bank, ogg_tmpfile, font, midi_file_path)
+
+    fluid_cmd = (
+        'fluidsynth'
+        '-T oga'
+        '-nli'
+        '-r 44200'
+        '-o synth.midi-bank-select={}'.format(bank),
+        '-F',
+        ogg_tmpfile,
+        font,
+        midi_file_path,
+        )
+    fluid_cmd = ' '.join(fluid_cmd)
     print(fluid_cmd)
     result = systemtools.IOManager.spawn_subprocess(fluid_cmd)
     if result == 0:
@@ -113,7 +124,8 @@ def play(expr):
         return
 
     # MP3 Rendering
-    ffmpeg_cmd = 'ffmpeg -i %s %s' % (ogg_tmpfile, mp3_tmpfile)
+
+    ffmpeg_cmd = 'ffmpeg -i {} {}'.format(ogg_tmpfile, mp3_tmpfile)
     print(ffmpeg_cmd)
     result = systemtools.IOManager.spawn_subprocess(ffmpeg_cmd)
     if result == 0:
