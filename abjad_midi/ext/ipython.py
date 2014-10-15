@@ -21,6 +21,7 @@ Linux
 
 import os
 import os.path
+import shutil
 import tempfile
 from IPython.core.display import display_html
 
@@ -66,8 +67,7 @@ def get_b64_from_file(file_name):
         data = file_pointer.read()
         if sys.version_info[0] == 2:
             return base64.b64encode(data).decode('utf-8')
-        else:
-            return base64.b64encode(data)
+        return base64.b64encode(data)
 
 
 def play(expr):
@@ -77,29 +77,28 @@ def play(expr):
     This function requires `fluidsynth` and `ffmpeg` to convert MIDI into an
     audio recording.
     '''
-
+    from abjad.tools import topleveltools
     global sound_font
     global midi_bank
-
-    from abjad.tools import systemtools, topleveltools
     assert '__illustrate__' in dir(expr)
-
     if not sound_font:
         message = 'sound_font is not specified, please call '
         message += "'load_sound_font(sound_font, midi_bank)\'"
         print(message)
         return
-
-    tmpdir = tempfile.mkdtemp()
-    agent = topleveltools.persist(expr)
-    result = agent.as_midi(os.path.join(tmpdir, 'out.mid'))
+    temp_directory = tempfile.mkdtemp()
+    midi_file_path = os.path.join(temp_directory, 'out.mid')
+    result = topleveltools.persist(expr).as_midi(midi_file_path)
     midi_file_path, format_time, render_time = result
+    ogg_file_path = os.path.join(temp_directory, 'out.ogg')
+    mp3_file_path = os.path.join(temp_directory, 'out.mp3')
+    display_ogg(midi_file_path, ogg_file_path)
+    display_mp3(mp3_file_path, ogg_file_path)
+    shutil.rmtree(temp_directory)
 
-    ogg_file_path = os.path.join(tmpdir, 'out.ogg')
-    mp3_file_path = os.path.join(tmpdir, 'out.mp3')
 
-    # OGG rendering
-
+def display_ogg(midi_file_path, ogg_file_path):
+    from abjad.tools import systemtools
     fluidsynth_command = (
         'fluidsynth'
         '-T oga'
@@ -120,14 +119,14 @@ def play(expr):
         audio_tag += 'src="data:audio/ogg;base64,{}">'
         audio_tag = audio_tag.format(encoded_audio)
         display_html(audio_tag, raw=True)
-    else:
-        message = 'fluidsynth failed to render MIDI as OGG, result: {!i}'
-        message = message.format(result)
-        print(message)
         return
+    message = 'fluidsynth failed to render MIDI as OGG, result: {!i}'
+    message = message.format(result)
+    print(message)
 
-    # MP3 Rendering
 
+def display_mp3(mp3_file_path, ogg_file_path):
+    from abjad.tools import systemtools
     ffmpeg_command = 'ffmpeg -i {} {}'.format(ogg_file_path, mp3_file_path)
     print(ffmpeg_command)
     result = systemtools.IOManager.spawn_subprocess(ffmpeg_command)
@@ -137,10 +136,10 @@ def play(expr):
         audio_tag += 'src="data:audio/mpeg;base64,{}">'
         audio_tag = audio_tag.format(encoded_audio)
         display_html(audio_tag, raw=True)
-    else:
-        message = 'ffmpeg failed to render OGG as MP3, result: {!i}'
-        message = message.format(result)
-        print(message)
+        return
+    message = 'ffmpeg failed to render OGG as MP3, result: {!i}'
+    message = message.format(result)
+    print(message)
 
 
 def load_ipython_extension(ipython):
