@@ -29,40 +29,40 @@ from IPython.core.display import display_html
 # Global (module) variables set by load_sound_font() only
 #
 
-font = None
-bank = 'gs'
+sound_font = None
+midi_bank = 'gs'
 
 
-def load_sound_font(soundfont, midibank):
-    '''Save location of argument SoundFont and its type.
+def load_sound_font(new_sound_font, new_midi_bank):
+    '''Save location of argument sound_font and its type.
 
     Type can be either 'gs', 'gm', 'xg', or 'mma'.
     '''
-    global font
-    global bank
+    global sound_font
+    global midi_bank
 
-    if os.path.isfile(soundfont):
-        font = soundfont
+    if os.path.isfile(new_sound_font):
+        sound_font = new_sound_font
     else:
-        message = 'The specified SoundFont {} (relative to {}) '
+        message = 'The specified sound_font {} (relative to {}) '
         message += 'is either inaccessible or does not exist.'
-        message = message.format(soundfont, os.getcwd())
+        message = message.format(new_sound_font, os.getcwd())
         print(message)
-    allowed_banks = ('gs', 'gm', 'xg', 'mma')
-    if midibank in allowed_banks:
-        bank = midibank
+    valid_midi_banks = ('gs', 'gm', 'xg', 'mma')
+    if new_midi_bank in valid_midi_banks:
+        midi_bank = new_midi_bank
     else:
-        message = 'The MIDI Bank must be either be one of {!s}'
-        message = message.format(allowed_banks)
+        message = 'The MIDI bank must be either be one of {!s}'
+        message = message.format(valid_midi_banks)
         print(message)
 
 
-def get_b64_from_file(filename):
+def get_b64_from_file(file_name):
     '''Read the base64 representation of a file and encode for HTML.
     '''
     import base64
     import sys
-    with open(filename, 'rb') as file_pointer:
+    with open(file_name, 'rb') as file_pointer:
         data = file_pointer.read()
         if sys.version_info[0] == 2:
             return base64.b64encode(data).decode('utf-8')
@@ -78,15 +78,15 @@ def play(expr):
     audio recording.
     '''
 
-    global font
-    global bank
+    global sound_font
+    global midi_bank
 
     from abjad.tools import systemtools, topleveltools
     assert '__illustrate__' in dir(expr)
 
-    if not font:
-        message = 'Soundfont is not specified, please call '
-        message += "'loadSoundFount(soundfont, midibank)\'"
+    if not sound_font:
+        message = 'sound_font is not specified, please call '
+        message += "'load_sound_font(sound_font, midi_bank)\'"
         print(message)
         return
 
@@ -105,10 +105,10 @@ def play(expr):
         '-T oga'
         '-nli'
         '-r 44200'
-        '-o synth.midi-bank-select={}'.format(bank),
+        '-o synth.midi-bank-select={}'.format(midi_bank),
         '-F',
         ogg_file_path,
-        font,
+        sound_font,
         midi_file_path,
         )
     fluidsynth_command = ' '.join(fluidsynth_command)
