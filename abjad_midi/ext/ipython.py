@@ -94,30 +94,30 @@ def play(expr):
     result = agent.as_midi(os.path.join(tmpdir, 'out.mid'))
     midi_file_path, format_time, render_time = result
 
-    ogg_tmpfile = os.path.join(tmpdir, 'out.ogg')
-    mp3_tmpfile = os.path.join(tmpdir, 'out.mp3')
+    ogg_file_path = os.path.join(tmpdir, 'out.ogg')
+    mp3_file_path = os.path.join(tmpdir, 'out.mp3')
 
     # OGG rendering
 
-    fluid_cmd = (
+    fluidsynth_command = (
         'fluidsynth'
         '-T oga'
         '-nli'
         '-r 44200'
         '-o synth.midi-bank-select={}'.format(bank),
         '-F',
-        ogg_tmpfile,
+        ogg_file_path,
         font,
         midi_file_path,
         )
-    fluid_cmd = ' '.join(fluid_cmd)
-    print(fluid_cmd)
-    result = systemtools.IOManager.spawn_subprocess(fluid_cmd)
+    fluidsynth_command = ' '.join(fluidsynth_command)
+    print(fluidsynth_command)
+    result = systemtools.IOManager.spawn_subprocess(fluidsynth_command)
     if result == 0:
-        audio_encoded = get_b64_from_file(ogg_tmpfile)
+        encoded_audio = get_b64_from_file(ogg_file_path)
         audio_tag = '<audio controls type="audio/ogg" '
         audio_tag += 'src="data:audio/ogg;base64,{}">'
-        audio_tag = audio_tag.format(audio_encoded)
+        audio_tag = audio_tag.format(encoded_audio)
         display_html(audio_tag, raw=True)
     else:
         message = 'fluidsynth failed to render MIDI as OGG, result: {!i}'
@@ -127,14 +127,14 @@ def play(expr):
 
     # MP3 Rendering
 
-    ffmpeg_cmd = 'ffmpeg -i {} {}'.format(ogg_tmpfile, mp3_tmpfile)
-    print(ffmpeg_cmd)
-    result = systemtools.IOManager.spawn_subprocess(ffmpeg_cmd)
+    ffmpeg_command = 'ffmpeg -i {} {}'.format(ogg_file_path, mp3_file_path)
+    print(ffmpeg_command)
+    result = systemtools.IOManager.spawn_subprocess(ffmpeg_command)
     if result == 0:
-        audio_encoded = get_b64_from_file(mp3_tmpfile)
+        encoded_audio = get_b64_from_file(mp3_file_path)
         audio_tag = '<audio controls type="audio/mpeg" '
         audio_tag += 'src="data:audio/mpeg;base64,{}">'
-        audio_tag = audio_tag.format(audio_encoded)
+        audio_tag = audio_tag.format(encoded_audio)
         display_html(audio_tag, raw=True)
     else:
         message = 'ffmpeg failed to render OGG as MP3, result: {!i}'
