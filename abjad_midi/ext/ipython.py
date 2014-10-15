@@ -44,12 +44,17 @@ def load_sound_font(soundfont, midibank):
     if os.path.isfile(soundfont):
         font = soundfont
     else:
-        print('The specified SoundFont %s (relative to %s) is either inaccessible or does not exist.' % (soundfont, os.getcwd()))
-    allowed_banks = ['gs', 'gm', 'xg', 'mma']
+        message = 'The specified SoundFont {} (relative to {}) '
+        message += 'is either inaccessible or does not exist.'
+        message = message.format(soundfont, os.getcwd())
+        print(message)
+    allowed_banks = ('gs', 'gm', 'xg', 'mma')
     if midibank in allowed_banks:
         bank = midibank
     else:
-        print("The MIDI Bank must be either be one of %s" % (str(allowed_banks)))
+        message = 'The MIDI Bank must be either be one of {!s}'
+        message = message.format(allowed_banks)
+        print(message)
 
 
 def get_b64_from_file(filename):
@@ -79,7 +84,9 @@ def play(expr):
     assert '__illustrate__' in dir(expr)
 
     if not font:
-        print('Soundfont is not specified, please call \'loadSoundFount(soundfont, midibank)\'')
+        message = 'Soundfont is not specified, please call '
+        message += "'loadSoundFount(soundfont, midibank)\'"
+        print(message)
         return
 
     tmpdir = tempfile.mkdtemp()
@@ -100,7 +107,9 @@ def play(expr):
         audio_tag = '<audio controls type="audio/ogg" src="data:audio/ogg;base64,{0}">'.format(audio_encoded)
         display_html(audio_tag, raw=True)
     else:
-        print('fluidsynth failed to render MIDI as OGG, result: %i' % (result))
+        message = 'fluidsynth failed to render MIDI as OGG, result: {!i}'
+        message = message.format(result)
+        print(message)
         return
 
     # MP3 Rendering
@@ -112,7 +121,9 @@ def play(expr):
         audio_tag = '<audio controls type="audio/mpeg" src="data:audio/mpeg;base64,{0}">'.format(audio_encoded)
         display_html(audio_tag, raw=True)
     else:
-        print('ffmpeg failed to render OGG as MP3, result: %i' % (result))
+        message = 'ffmpeg failed to render OGG as MP3, result: {!i}'
+        message = message.format(result)
+        print(message)
 
 
 def load_ipython_extension(ipython):
