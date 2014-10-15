@@ -115,7 +115,9 @@ def play(expr):
     result = systemtools.IOManager.spawn_subprocess(fluid_cmd)
     if result == 0:
         audio_encoded = get_b64_from_file(ogg_tmpfile)
-        audio_tag = '<audio controls type="audio/ogg" src="data:audio/ogg;base64,{0}">'.format(audio_encoded)
+        audio_tag = '<audio controls type="audio/ogg" '
+        audio_tag += 'src="data:audio/ogg;base64,{}">'
+        audio_tag = audio_tag.format(audio_encoded)
         display_html(audio_tag, raw=True)
     else:
         message = 'fluidsynth failed to render MIDI as OGG, result: {!i}'
@@ -130,7 +132,9 @@ def play(expr):
     result = systemtools.IOManager.spawn_subprocess(ffmpeg_cmd)
     if result == 0:
         audio_encoded = get_b64_from_file(mp3_tmpfile)
-        audio_tag = '<audio controls type="audio/mpeg" src="data:audio/mpeg;base64,{0}">'.format(audio_encoded)
+        audio_tag = '<audio controls type="audio/mpeg" '
+        audio_tag += 'src="data:audio/mpeg;base64,{}">'
+        audio_tag = audio_tag.format(audio_encoded)
         display_html(audio_tag, raw=True)
     else:
         message = 'ffmpeg failed to render OGG as MP3, result: {!i}'
