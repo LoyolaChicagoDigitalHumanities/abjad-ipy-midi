@@ -61,9 +61,10 @@ def get_b64_from_file(filename):
     '''Read the base64 representation of a file and encode for HTML.
     '''
     import base64
-    with open(filename, "rb") as infile:
-        data = infile.read()
-        if type(data) != type(''):
+    import sys
+    with open(filename, 'rb') as file_pointer:
+        data = file_pointer.read()
+        if sys.version_info[0] == 2:
             return base64.b64encode(data).decode('utf-8')
         else:
             return base64.b64encode(data)
