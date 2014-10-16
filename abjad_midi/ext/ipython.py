@@ -113,7 +113,7 @@ class Play(object):
             'fluidsynth',
             '-T oga',
             '-nli',
-            '-r 44200',
+            '-r 44100',
             '-o synth.midi-bank-select={}'.format(midi_bank),
             '-F',
             ogg_file_path,
@@ -153,6 +153,7 @@ class Play(object):
 
         Type can be either 'gs', 'gm', 'xg', or 'mma'.
         '''
+        new_sound_font = os.path.expanduser(new_sound_font)
         if os.path.isfile(new_sound_font):
             self._sound_font = new_sound_font
         else:
@@ -185,4 +186,8 @@ def load_ipython_extension(ipython):
     play = Play()
     abjad.play = play
     topleveltools.play = play
-    ipython.push({'play': play})
+    names = {
+        'load_sound_font': play.load_sound_font,
+        'play': play
+        }
+    ipython.push(names)
